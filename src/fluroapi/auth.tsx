@@ -1,6 +1,6 @@
 import React from 'react';
-import {API_URL} from './config';
-import { ApiContext } from './context';
+import { API_URL } from './api';
+import { useSessionState } from './sessionState';
 
 
 // Login
@@ -8,6 +8,7 @@ export interface LoginInput {
   username: string
   password: string
 }
+
 export interface LoginPayload {
   _id: string
   name: string
@@ -23,6 +24,7 @@ export interface LoginPayload {
     shortName: string
   }
 }
+
 export const login = async (input: LoginInput) => {
   const r = await fetch(API_URL + 'token/login', {
     method: 'POST',
@@ -32,26 +34,47 @@ export const login = async (input: LoginInput) => {
     body: JSON.stringify(input)
   });
   if (!r.ok) return null;
-  return r.json() as unknown as LoginPayload;
+  return await r.json() as unknown as LoginPayload;
 }
 
 
-export const useApiLogin = () => {
-  const context = React.useContext(ApiContext);
+export const useFluroAuth = () => {
+  const [data, setUser] = useSessionState<LoginPayload>('fluro-auth');
   const [fetching, setFetching] = React.useState(false);
+  const authHeaders = data ? {Authorization: `Bearer ${data.token}`} : null;
+
   return {
-    user: context.auth,
+
+    data,
+    
+    fetching,
+
+    api: authHeaders ? {
+      headers: authHeaders,
+      buildPostInit: (json: any) => ({
+        method: 'POST',
+        body:  JSON.stringify(json),
+        headers: {
+          ...authHeaders,
+          'Content-Type': 'application/json',
+        },
+      }),
+    } : null,
+
     login: async (input: LoginInput) => {
       setFetching(true);
       const d = await login(input);
-      if (!d) return;
-      context.setAuth(d)
+      setUser(d);
       setFetching(false);
       return d;
     },
+
     logout: async () => { 
-      context.setAuth(null)
+      setUser(null)
     },
-    fetching
+
   }
 };
+
+
+export type FluroAuth = ReturnType<typeof useFluroAuth>;

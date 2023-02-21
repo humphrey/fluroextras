@@ -1,6 +1,7 @@
 import React from "react"
-import { ApiFetchInfo } from "./config"
-import { ApiContext } from "./context"
+import { API_URL } from "./api"
+import { FluroAuth } from "./auth"
+import { useSessionState } from "./sessionState"
 
 
 export interface Capability {
@@ -112,23 +113,21 @@ const PAYLOAD = {
 };
 
 
-export const useApiTeam = () => {
-  const context = React.useContext(ApiContext);
+export const useFluroTeam = (auth: FluroAuth) => {
+  const [data, setData] = useSessionState<TeamMember[]>('fluro-team');
   const [fetching, setFetching] = React.useState(false);
 
+  if (auth.api === null) return null;
+
   const reload = async () => {
+    if (auth.api === null) return null;
     setFetching(true);
-    const data = await context.authFetch({
-      path: 'content/contact/filter', 
-      json: PAYLOAD,
-    })
-    if (data) {
-      context.setTeam(data);
-      setFetching(false);
-      return data as TeamMember[];
-    }
+    const r = await fetch(API_URL + 'content/contact/filter', auth.api.buildPostInit(PAYLOAD));
+    if (!r.ok) return null;
+    const j = (await r.json() as TeamMember[] | null) ?? [];
+    setData(j);
     setFetching(false);
-    return null;
+    return j;
   }
 
 
@@ -141,8 +140,16 @@ export const useApiTeam = () => {
   // }, [couldBeLoaded])
 
   return {
-    team: context.team,
+    data,
     reload,
-    fetching
+    fetching,
+    getData: async (opts?: {noCache?: boolean}) => {
+      if (data === null || opts?.noCache) {
+        return await reload();
+      }
+      return data;
+    },
   }
 };
+
+export type FluroTeam = ReturnType<typeof useFluroTeam>;

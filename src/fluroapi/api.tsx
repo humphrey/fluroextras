@@ -6,3 +6,8 @@ export interface ApiFetchInfo<T> {
   fetch: RequestInit
   parse: (json: any) => T
 }
+
+export const buildJsonBodyInit = (body: any) => ({
+  method: 'POST',
+  body: JSON.stringify(body),
+})

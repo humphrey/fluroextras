@@ -1,5 +1,6 @@
 
-import { useApiTeam } from './api/team';
+
+import { useFluroContext } from './fluroapi/context';
 import { TeamTable } from './TeamTable';
 
 interface Props {
@@ -7,18 +8,20 @@ interface Props {
 
 
 
-
 export const Team = (props: Props) => {
-  const team = useApiTeam();
+  const fluro = useFluroContext();
+  console.log('team:', fluro.team)
+  const data = fluro.team?.data;
   return (
     <>
-      <h5>Worship Team Capabilities</h5>
-      {team.team && <TeamTable team={team.team} type="worshipCapability"/>}
-      <h5>Production Team Capabilities</h5>
-      {team.team && <TeamTable team={team.team} type="worshipproduction"/>}
-      <h5>Connection Team Capabilities</h5>
-      {team.team && <TeamTable team={team.team} type="connectionscapability"/>}
-      <button disabled={team.fetching} onClick={() => team.reload()}>{team.fetching ? 'Loading...' : (team.team ? 'Reload' : 'Load')}</button>
+      {/* <h5>Capabilities <button disabled={fluro.team?.fetching} onClick={() => fluro.team?.reload()}>{fluro.team?.fetching ? 'Loading...' : (fluro.team?.data ? 'Reload' : 'Load')}</button></h5> */}
+      
+      <h6>Worship Team Capabilities</h6>
+      {data && <TeamTable team={data} type="worshipCapability"/>}
+      <h6>Production Team Capabilities</h6>
+      {data && <TeamTable team={data} type="worshipproduction"/>}
+      <h6>Connection Team Capabilities</h6>
+      {data && <TeamTable team={data} type="connectionscapability"/>}
     </>
   )
 }

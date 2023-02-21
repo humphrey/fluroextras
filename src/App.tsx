@@ -1,5 +1,5 @@
 import React from 'react';
-import { ApiContext, useApiStore } from './api/context';
+import { ApiContext, useFluroApiState } from './fluroapi/context';
 import { LoginForm } from './LoginForm';
 import { TeamTable } from './TeamTable';
 // import {
@@ -11,6 +11,7 @@ import { TeamTable } from './TeamTable';
 import { Team } from './Team';
 import { Roster } from './Roster';
 import { TeamUnavailability } from './TeamUnavailability';
+import { ReloadButton } from './fluroapi/ReloadButton';
 
 
 
@@ -66,24 +67,33 @@ import { TeamUnavailability } from './TeamUnavailability';
 // ]);
 
 function App() {
-  const apiState = useApiStore()
+  const fluro = useFluroApiState()
   return (
-    <ApiContext.Provider value={apiState}>
+    <ApiContext.Provider value={fluro}>
       {/* <RouterProvider router={router} /> */}
-      {apiState.auth ? <>
+      {fluro.auth.api ? <>
         <div className='bg-dark text-white mb-2 d-flex align-items-center'>
           <div className='p-3 me-auto'>Simple Fluro Schedular</div>
+          <div className='p-3'>{fluro.auth.data?.firstName}</div>
+          {fluro.auth.data && <button className='btn btn-dark' onClick={() => fluro.auth.logout()}>Logout</button>}
           {/* <button className="btn btn-light mx-3" type="button" onClick={async () => await apiState.updateAllData()}>Reload</button> */}
         </div>
-        <Team/>
-        <h5>Team Roster</h5>
-        <Roster/>
-        <h5>Worship Team Unavailability</h5>
-        <TeamUnavailability type="worshipCapability"/>
-        <h5>Production Team Unavailability</h5>
-        <TeamUnavailability type="worshipproduction"/>
-        <h5>Conenction Team Unavailability</h5>
-        <TeamUnavailability type="connectionscapability"/>
+        {fluro.team?.reload && <>
+          <h5>Team <ReloadButton {...fluro.team}/></h5>
+          <Team/>
+        </>}
+        {fluro.eventDetails?.reload && <>
+          <h5>Team Roster <ReloadButton {...fluro.eventDetails}/></h5>
+          <Roster/>
+        </>}
+        {fluro.unavailability?.reload && <>
+          <h5>Worship Team Unavailability <ReloadButton {...fluro.unavailability}/></h5>
+          <TeamUnavailability type="worshipCapability"/>
+          <h5>Production Team Unavailability <ReloadButton {...fluro.unavailability}/></h5>
+          <TeamUnavailability type="worshipproduction"/>
+          <h5>Connection Team Unavailability <ReloadButton {...fluro.unavailability}/></h5>
+          <TeamUnavailability type="connectionscapability"/>
+        </>}
       </> : 
       <LoginForm/>}
 

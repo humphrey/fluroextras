@@ -1,15 +1,16 @@
 import React from 'react';
 import { useForm } from "react-hook-form";
-import { LoginInput, useApiLogin } from './api/login';
+import { LoginInput } from './fluroapi/auth';
+import { useFluroContext } from './fluroapi/context';
 
 export const LoginForm = () => {
-  const api = useApiLogin();
+  const fluro = useFluroContext();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>();
   const [loading, setLoading] = React.useState(false);
   const onSubmit = handleSubmit(async data => {
     // console.log(data)
     setLoading(true)
-    await api.login(data)
+    await fluro.auth.login(data)
     setLoading(false)
   });
   return (

@@ -1,19 +1,22 @@
 import React from 'react';
-import { EventDetail, Track, useApiEvents } from './api/events';
-import { useApiTeam } from './api/team';
+import { useFluroContext } from './fluroapi/context';
+import { EventDetail, FluroEventDetails, Track } from './fluroapi/eventDetails';
 
 
 export const Roster = () => {
-  const team = useApiTeam();
-  const events = useApiEvents(team.team ? team.team.map(m => m._id) : []);
-  const tracks = useTrackFilter(events.events)
+  const fluro = useFluroContext();
+  const events = fluro.eventDetails?.data ?? [];
+
+  // const team = useApiTeam();
+  // const events = useFluroEvents(team.team ? team.team.map(m => m._id) : []);
+  const tracks = useTrackFilter(events)
   // if (!events.events) return <>Loading Roster...</>
   // console.log(api.events.map(e => e.track))
   console.log(tracks.tracks)
   // console.log('>>', api.events.map(e => e.track ? tracks.isVisible(e.track._id): false))
   // console.log('--', events.events.map(e => e.track))
 
-  const visibleEvents = events.events?.filter(e => e.track?.status === 'active' && !tracks.hidden.includes(e.track._id)) ?? [];
+  const visibleEvents = events.filter(e => e.track?.status === 'active' && !tracks.hidden.includes(e.track._id)) ?? [];
 
   return (
     <>
@@ -52,12 +55,12 @@ export const Roster = () => {
           </table>
         </div>
       }
-      <button disabled={events.fetching} onClick={() => events.reload()}>{events.fetching ? 'Loading...' : (events.events ? 'Reload' : 'Load')}</button>
+      {/* <button disabled={fluro.eventDetails?.fetching} onClick={() => fluro.eventDetails?.reload()}>{fluro.eventDetails?.fetching ? 'Loading...' : (fluro.eventDetails?.data ? 'Reload' : 'Load')}</button> */}
     </>
   )
 }
 
-const useTrackFilter = (events: EventDetail[] | null) => {
+const useTrackFilter = (events: EventDetail[]) => {
   const [hidden, setHidden] = React.useState<string[]>([]);
 
   const tracksById = events?.filter(e => e.track?.status === 'active')

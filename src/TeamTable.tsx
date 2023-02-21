@@ -1,5 +1,5 @@
 import React from 'react';
-import { Capability, TeamMember } from './api/team';
+import { Capability, TeamMember } from './fluroapi/team';
 
 interface Props {
   team: TeamMember[]
