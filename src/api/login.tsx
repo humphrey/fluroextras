@@ -1,4 +1,6 @@
+import React from 'react';
 import {API_URL} from './config';
+import { ApiContext } from './context';
 
 
 // Login
@@ -30,5 +32,26 @@ export const login = async (input: LoginInput) => {
     body: JSON.stringify(input)
   });
   if (!r.ok) return null;
-  return r.json();
+  return r.json() as unknown as LoginPayload;
 }
+
+
+export const useApiLogin = () => {
+  const context = React.useContext(ApiContext);
+  const [fetching, setFetching] = React.useState(false);
+  return {
+    user: context.auth,
+    login: async (input: LoginInput) => {
+      setFetching(true);
+      const d = await login(input);
+      if (!d) return;
+      context.setAuth(d)
+      setFetching(false);
+      return d;
+    },
+    logout: async () => { 
+      context.setAuth(null)
+    },
+    fetching
+  }
+};

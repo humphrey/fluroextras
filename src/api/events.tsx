@@ -1,4 +1,6 @@
+import React from "react"
 import { ApiFetchInfo } from "./config"
+import { ApiContext } from "./context"
 
 
 export interface EventStub {
@@ -42,7 +44,7 @@ export const fetchEventList = (): ApiFetchInfo<EventStub[]> => ({
   parse: json => json
 })
 
-const addDays = (date: Date, days: number) => {
+export const addDays = (date: Date, days: number) => {
   date.setDate(date.getDate() + days);
   return date;
 }
@@ -85,18 +87,45 @@ export interface EventDetail {
   track: Track | undefined
 }
 
-export const fetchEventDetails = (eventIds: string[]): ApiFetchInfo<EventDetail[]> => ({
-  path: 'content/event/multiple', 
-  fetch: {
-    method: 'POST',
-    body: JSON.stringify({
-      "ids":eventIds,
-      "select":["title","_type","definition","subject","date","_id","realms","endDate","timezone","startDate","firstLine","status","plans","streamEnabled","publicTicketingEnabled","stats.guestExpected","stats.guestConfirmed","stats.guestDeclined","tickets.value","stats.checkin","headcount.average","track","rooms","locations","updated","created"],
-      "populateAll":true,
-      "limit":eventIds.length,
-      "appendContactDetails":[],
-      "appendAssignments":true
+
+export const useApiEvents = (eventIds: string[]) => {
+  const context = React.useContext(ApiContext);
+  const [fetching, setFetching] = React.useState(false);
+
+  const reload = async () => {
+    setFetching(true);
+    const data = await context.authFetch({
+      path: 'content/event/multiple', 
+      json: {
+        "ids": eventIds,
+        "select":["title","_type","definition","subject","date","_id","realms","endDate","timezone","startDate","firstLine","status","plans","streamEnabled","publicTicketingEnabled","stats.guestExpected","stats.guestConfirmed","stats.guestDeclined","tickets.value","stats.checkin","headcount.average","track","rooms","locations","updated","created"],
+        "populateAll":true,
+        "limit": eventIds.length,
+        "appendContactDetails":[],
+        "appendAssignments":true
+      },
     })
-  },
-  parse: json => (json as EventDetail[]).filter(e => e.track?.status === 'active')
-})
+    if (data) {
+      context.setEvents(data);
+      setFetching(false);
+      return (data as EventDetail[]).filter(e => e.track?.status === 'active');
+    }
+    setFetching(false);
+    return null;
+  }
+
+
+  // Auto load team, if hook in use
+  // const couldBeLoaded = eventIds.length > 0 && !fetching && context.events === null && context.auth?.refreshToken;
+  // React.useEffect(() => {
+  //   if (couldBeLoaded) {
+  //     reload();
+  //   }
+  // }, [couldBeLoaded])
+
+  return {
+    events: context.events,
+    reload,
+    fetching
+  }
+};

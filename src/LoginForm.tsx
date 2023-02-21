@@ -1,14 +1,16 @@
 import React from 'react';
 import { useForm } from "react-hook-form";
-import { useApi } from './api/context';
-import { LoginInput } from './api/login';
+import { LoginInput, useApiLogin } from './api/login';
 
 export const LoginForm = () => {
-  const api = useApi();
+  const api = useApiLogin();
   const { register, handleSubmit, formState: { errors } } = useForm<LoginInput>();
-  const onSubmit = handleSubmit(data => {
+  const [loading, setLoading] = React.useState(false);
+  const onSubmit = handleSubmit(async data => {
     // console.log(data)
-    api.login(data)
+    setLoading(true)
+    await api.login(data)
+    setLoading(false)
   });
   return (
     <form onSubmit={onSubmit}>
@@ -18,13 +20,13 @@ export const LoginForm = () => {
       <input {...register("password")} type="password" />
       <button
         type="submit"
+        disabled={loading}
         // onClick={() => {
         //   setValue("username", "luo"); // ✅
         //   setValue("firstName", true); // ❌: true is not string
         //   errors.bill; // ❌: property bill does not exist
         // }}
-      >
-        Login
+      >{loading ? 'Logging In' : 'Login'}
       </button>
     </form>
   )

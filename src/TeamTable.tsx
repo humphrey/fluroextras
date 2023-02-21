@@ -23,12 +23,12 @@ export const TeamTable = (props: Props) => {
 
   return (
     
-    <table className='table table-bordered table-striped'>
+    <table className='table table-sm table-bordered table-striped'>
       <thead>
         <tr>
-          <th></th>
+          <td></td>
           {capabilities.map(c => (
-            <th key={c.title}>{c.title}</th>
+            <td key={c.title}>{c.title}</td>
           ))}
         </tr>
       </thead>
@@ -38,7 +38,7 @@ export const TeamTable = (props: Props) => {
             .sort((a,b) => a.title.localeCompare(b.title))
             .map(t => (
           <tr key={t._id}>
-            <th>{t.title}</th>
+            <td>{t.title}</td>
             {capabilities.map(c => (
               <th>
                 {t.capabilities.filter(mc => mc.title === c.title).length > 0 && '✅'}
