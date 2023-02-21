@@ -1,17 +1,16 @@
-import React from 'react';
 import { ApiContext, useFluroApiState } from './fluroapi/context';
 import { LoginForm } from './LoginForm';
-import { TeamTable } from './TeamTable';
 // import {
 //   createBrowserRouter,
 //   RouterProvider,
 //   Link,
 //   Outlet,
 // } from "react-router-dom";
-import { Team } from './Team';
-import { Roster } from './Roster';
-import { TeamUnavailability } from './TeamUnavailability';
+import { Campuses } from './Campuses';
 import { ReloadButton } from './fluroapi/ReloadButton';
+import { Roster } from './Roster';
+import { Team } from './Team';
+import { TeamUnavailability } from './TeamUnavailability';
 
 
 
@@ -78,6 +77,9 @@ function App() {
           {fluro.auth.data && <button className='btn btn-dark' onClick={() => fluro.auth.logout()}>Logout</button>}
           {/* <button className="btn btn-light mx-3" type="button" onClick={async () => await apiState.updateAllData()}>Reload</button> */}
         </div>
+
+        <Campuses/>
+
         {fluro.team?.reload && <>
           <h5>Team <ReloadButton {...fluro.team}/></h5>
           <Team/>

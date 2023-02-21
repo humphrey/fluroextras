@@ -9,6 +9,35 @@ export interface LoginInput {
   password: string
 }
 
+interface BasePermissionSet {
+  _id: string
+  title: string
+  color: string
+  bgColor: string
+}
+// interface CampusPermissionSet extends BasePermissionSet {
+//   definition: "campus",
+//   children?: {
+//     "_id": "616f6f53f9b423102114da74",
+//     "_team": "616f6f53f9b423102114da72",
+//     "title": "LAUNCESTON EARLY CHILDHOOD",
+//     "definition": "team",
+//     "_discriminator": "kidsCheckInRooms",
+//     "_discriminatorType": "team"
+//   }
+// }
+// interface OtherPermissionSet extends BasePermissionSet {
+//   definition: "campus",
+//   children?: {
+//     "_id": "616f6f53f9b423102114da74",
+//     "_team": "616f6f53f9b423102114da72",
+//     "title": "LAUNCESTON EARLY CHILDHOOD",
+//     "definition": "team",
+//     "_discriminator": "kidsCheckInRooms",
+//     "_discriminatorType": "team"
+//   }
+// }
+
 export interface LoginPayload {
   _id: string
   name: string
@@ -22,6 +51,23 @@ export interface LoginPayload {
     _id: string
     title: string
     shortName: string
+  }
+  permissionSets: {
+    [id: string]: {
+      _id: string
+      title: string
+      color: string
+      bgColor: string
+      definition?: "campus" | string
+      children?: {
+        "_id": string,
+        "_team": string,
+        "title": string,
+        "definition": string,
+        "_discriminator": string,
+        "_discriminatorType": string
+      }[]
+    }
   }
 }
 
