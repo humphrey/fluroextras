@@ -1,6 +1,6 @@
 import React from 'react';
 import { API_URL } from './api';
-import { useSessionState } from './sessionState';
+import { sessionStateKeys, useSessionState } from './sessionState';
 
 
 // Login
@@ -39,9 +39,19 @@ export const login = async (input: LoginInput) => {
 
 
 export const useFluroAuth = () => {
-  const [data, setUser] = useSessionState<LoginPayload>('fluro-auth');
+  const [data, setUser] = useSessionState<LoginPayload>(sessionStateKeys.AUTH);
   const [fetching, setFetching] = React.useState(false);
-  const authHeaders = data ? {Authorization: `Bearer ${data.token}`} : null;
+
+  const getAuthHeaders = (): HeadersInit => {
+    if (!data) return {};
+
+    // Is the refresh token expired?
+    if (data.expires.localeCompare(new Date().toISOString()) <= 0) {
+      console.log('token expired')
+    }
+
+    return {Authorization: `Bearer ${data.token}`};
+  };
 
   return {
 
@@ -49,13 +59,17 @@ export const useFluroAuth = () => {
     
     fetching,
 
-    api: authHeaders ? {
-      headers: authHeaders,
+    api: data ? {
+      // headers: getAuthHeaders,
+      buildGetInit: () => ({
+        method: 'GET',
+        headers: getAuthHeaders(),
+      }),
       buildPostInit: (json: any) => ({
         method: 'POST',
         body:  JSON.stringify(json),
         headers: {
-          ...authHeaders,
+          ...getAuthHeaders(),
           'Content-Type': 'application/json',
         },
       }),
@@ -71,6 +85,7 @@ export const useFluroAuth = () => {
 
     logout: async () => { 
       setUser(null)
+      window.sessionStorage.clear();
     },
 
   }

@@ -40,7 +40,7 @@ export const TeamTable = (props: Props) => {
           <tr key={t._id}>
             <td>{t.title}</td>
             {capabilities.map(c => (
-              <th>
+              <th key={c._id}>
                 {t.capabilities.filter(mc => mc.title === c.title).length > 0 && '✅'}
               </th>
             ))}

@@ -1,7 +1,7 @@
 import React from "react"
 import { API_URL } from "./api"
 import { FluroAuth } from "./auth"
-import { useSessionState } from "./sessionState"
+import { sessionStateKeys, useSessionState } from "./sessionState"
 
 
 export interface Capability {
@@ -114,7 +114,7 @@ const PAYLOAD = {
 
 
 export const useFluroTeam = (auth: FluroAuth) => {
-  const [data, setData] = useSessionState<TeamMember[]>('fluro-team');
+  const [data, setData] = useSessionState<TeamMember[]>(sessionStateKeys.TEAM);
   const [fetching, setFetching] = React.useState(false);
 
   if (auth.api === null) return null;

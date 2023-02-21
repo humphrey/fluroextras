@@ -1,7 +1,7 @@
 import React from "react"
 import { API_URL } from "./api"
 import { FluroAuth } from "./auth"
-import { useSessionState } from "./sessionState"
+import { sessionStateKeys, useSessionState } from "./sessionState"
 
 
 export interface EventStub {
@@ -20,7 +20,7 @@ export const addDays = (date: Date, days: number) => {
 
 
 export const useFluroEventList = (auth: FluroAuth) => {
-  const [data, setData] = useSessionState<EventStub[]>('fluro-eventlist');
+  const [data, setData] = useSessionState<EventStub[]>(sessionStateKeys.EVENT_LIST);
   const [fetching, setFetching] = React.useState(false);
 
   if (auth.api === null) return null;

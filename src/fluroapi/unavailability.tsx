@@ -1,7 +1,7 @@
 import React from "react"
 import { API_URL } from "./api"
 import { FluroAuth } from "./auth"
-import { useSessionState } from "./sessionState"
+import { sessionStateKeys, useSessionState } from "./sessionState"
 import { FluroTeam } from "./team"
 
 
@@ -22,7 +22,7 @@ export interface UnavailablityData {
 
 
 export const useFluroUnavailability = (auth: FluroAuth, team: FluroTeam) => {
-  const [data, setData] = useSessionState<UnavailablityData>('fluro-unavailability');
+  const [data, setData] = useSessionState<UnavailablityData>(sessionStateKeys.UNAVAILABILITY);
   const [fetching, setFetching] = React.useState(false);
 
   if (auth.api === null || team === null) return null;
@@ -49,7 +49,7 @@ export const useFluroUnavailability = (auth: FluroAuth, team: FluroTeam) => {
       teamData.map(async m => {
         if (auth.api === null) return null;
         const url = API_URL + `contact/${m._id}/unavailability`;
-        const r = await fetch(url, {headers: auth.api.headers ?? {}});
+        const r = await fetch(url, auth.api.buildGetInit());
         if (!r.ok) return null;
         const j = (await r.json()) as UnavailablePeriod[] | null;
         if (j === null) return null;

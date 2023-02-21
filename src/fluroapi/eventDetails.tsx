@@ -2,7 +2,7 @@ import React from "react"
 import { API_URL } from "./api"
 import { FluroAuth } from "./auth"
 import { EventStub, FluroEventList } from "./eventList"
-import { useSessionState } from "./sessionState"
+import { sessionStateKeys, useSessionState } from "./sessionState"
 
 
 export interface Track {
@@ -45,7 +45,7 @@ export interface EventDetail {
 
 
 export const useFluroEventDetails = (auth: FluroAuth, eventList: FluroEventList) => {
-  const [data, setData] = useSessionState<EventDetail[]>('fluro-eventdetails');
+  const [data, setData] = useSessionState<EventDetail[]>(sessionStateKeys.EVENT_DETAILS);
   const [fetching, setFetching] = React.useState(false);
 
   if (auth.api === null || eventList === null) return null;

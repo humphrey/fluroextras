@@ -22,11 +22,11 @@ export const TeamUnavailability = (props: Props) => {
           {team?.filter(m => m.capabilities.filter(c => c.definition == props.type).length > 0).map(m => (
             <tr key={m._id}>
               <th>{m.title}</th>
-              {unavail ? unavail[m._id]?.filter(u => u.startDate.localeCompare(addDays(new Date(), -2).toISOString()) > 0 || u.endDate.localeCompare((new Date()).toISOString()) > 0).sort((a,b) => a.startDate.localeCompare(b.startDate)).map(u => (
+              {unavail && unavail[m._id]?.filter(u => u.startDate.localeCompare(addDays(new Date(), -2).toISOString()) > 0 || u.endDate.localeCompare((new Date()).toISOString()) > 0).sort((a,b) => a.startDate.localeCompare(b.startDate)).map(u => (
                 <td key={u._id}>
                   {u.startDate}<br/>{u.endDate}<br/>{u.description}
                 </td>
-              )) : '-'}
+              ))}
             </tr>
           ))}
         </tbody>
