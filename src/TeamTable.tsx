@@ -7,8 +7,6 @@ interface Props {
 }
 
 
-
-
 export const TeamTable = (props: Props) => {
   const fluro = useFluroContext();
 
@@ -28,7 +26,6 @@ export const TeamTable = (props: Props) => {
   const capabilities = Object.values(capabilitiesByTitle).sort((a,b) => a.title.localeCompare(b.title));
 
   return (
-    
     <table className='table table-sm table-bordered table-striped'>
       <thead>
         <tr>

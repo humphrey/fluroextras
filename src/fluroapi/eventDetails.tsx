@@ -57,15 +57,6 @@ export const useFluroEventDetails = (auth: FluroAuth, eventList: FluroEventList)
 
     const eventIds = (await eventList.getData())?.map(e => e._id) ?? null;
 
-    // let eventListData: EventStub[] | null = eventList.data;
-
-    // if (eventList.data === null) {
-    //   if (eventList.fetching) return null;
-    //   setFetching(true);
-    //   eventListData = await eventList.reload()
-    // }
-    // const eventIds = eventListData?.map(e => e._id) ?? null;
-
     if (eventIds === null) {
       setFetching(false);
       return null;
@@ -92,15 +83,6 @@ export const useFluroEventDetails = (auth: FluroAuth, eventList: FluroEventList)
     setFetching(false);
     return j;
   }
-
-
-  // Auto load team, if hook in use
-  // const couldBeLoaded = eventIds.length > 0 && !fetching && context.events === null && context.auth?.refreshToken;
-  // React.useEffect(() => {
-  //   if (couldBeLoaded) {
-  //     reload();
-  //   }
-  // }, [couldBeLoaded])
 
   return { data, reload, fetching }
 };
