@@ -43,7 +43,6 @@ export interface TeamMember {
   updated: string
 }
 
-// {"sort":{"sortKey":"lastName","sortDirection":"asc","sortType":"string"},"filter":{"operator":"and","filters":[{"operator":"and","filters":[{"key":"capabilities|connectionscapability","comparator":null,"values":[],"guid":"1866e53d-10bc-4000-8d2f-e33c1071b800","title":"CONNECTIONS Capability","value":null,"value2":null,"dataType":"reference"},{"guid":"1866e54d-13fe-4000-87bd-e50e60b87000","comparator":">","title":"Age","key":"age","value":"4","value2":null,"values":[],"dataType":"integer"}],"guid":"1866e53d-102e-4000-8c94-ffc529a1d000"}]},"search":"","includeArchived":false,"allDefinitions":true,"searchInheritable":false,"includeUnmatched":true,"timezone":"Australia/Hobart"}
 const PAYLOAD = {
   "sort": {
     "sortKey": "lastName",
@@ -129,15 +128,6 @@ export const useFluroTeam = (auth: FluroAuth) => {
     setFetching(false);
     return j;
   }
-
-
-  // Auto load team, if hook in use
-  // const couldBeLoaded = !fetching && context.team === null && context.auth?.refreshToken;
-  // React.useEffect(() => {
-  //   if (couldBeLoaded) {
-  //     reload();
-  //   }
-  // }, [couldBeLoaded])
 
   return {
     data,

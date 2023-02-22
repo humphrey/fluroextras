@@ -1,20 +1,13 @@
 import React from 'react';
 import { useFluroContext } from './fluroapi/context';
-import { EventDetail, FluroEventDetails, Track } from './fluroapi/eventDetails';
+import { EventDetail, Track } from './fluroapi/eventDetails';
 
 
 export const Roster = () => {
   const fluro = useFluroContext();
   const events = fluro.eventDetails?.data ?? [];
 
-  // const team = useApiTeam();
-  // const events = useFluroEvents(team.team ? team.team.map(m => m._id) : []);
   const tracks = useTrackFilter(events)
-  // if (!events.events) return <>Loading Roster...</>
-  // console.log(api.events.map(e => e.track))
-  console.log(tracks.tracks)
-  // console.log('>>', api.events.map(e => e.track ? tracks.isVisible(e.track._id): false))
-  // console.log('--', events.events.map(e => e.track))
 
   const visibleEvents = events.filter(e => e.track?.status === 'active' && !tracks.hidden.includes(e.track._id)) ?? [];
 
@@ -55,7 +48,6 @@ export const Roster = () => {
           </table>
         </div>
       }
-      {/* <button disabled={fluro.eventDetails?.fetching} onClick={() => fluro.eventDetails?.reload()}>{fluro.eventDetails?.fetching ? 'Loading...' : (fluro.eventDetails?.data ? 'Reload' : 'Load')}</button> */}
     </>
   )
 }

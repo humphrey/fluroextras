@@ -7,9 +7,6 @@ interface Props {
 }
 
 
-
-
-
 export const TeamUnavailability = (props: Props) => {
   const fluro = useFluroContext();
   const team = fluro.team?.data;
@@ -31,7 +28,6 @@ export const TeamUnavailability = (props: Props) => {
           ))}
         </tbody>
       </table>
-      {/* <button disabled={fluro.unavailability?.fetching} onClick={() => fluro.unavailability?.reload()}>{fluro.unavailability?.fetching ? 'Loading...' : (fluro.unavailability ? 'Reload' : 'Load')}</button> */}
     </>
   )
 }
