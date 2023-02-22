@@ -1,24 +1,30 @@
 import React from 'react';
+import { useFluroContext } from './fluroapi/context';
 import { Capability, TeamMember } from './fluroapi/team';
 
 interface Props {
-  team: TeamMember[]
-  type: string
+  capability: string
 }
 
 
 
 
 export const TeamTable = (props: Props) => {
+  const fluro = useFluroContext();
+
+  if (!fluro.team?.data) {
+    return <>No loaded</>
+  }
+
+  const team = fluro.team.data;
 
   const capabilitiesByTitle: {[key: string]: Capability} = {};
-  for (let m of props.team) {
+  for (let m of team) {
     for (let c of m.capabilities) {
-      if (c.definition === props.type)
+      if (c.definition === props.capability)
       capabilitiesByTitle[c.title] = c;
     }
   }
-  console.log(capabilitiesByTitle)
   const capabilities = Object.values(capabilitiesByTitle).sort((a,b) => a.title.localeCompare(b.title));
 
   return (
@@ -33,8 +39,8 @@ export const TeamTable = (props: Props) => {
         </tr>
       </thead>
       <tbody>
-        {props.team.filter(m => m.capabilities
-            .filter(c => c.definition === props.type).length > 0)
+        {team.filter(m => m.capabilities
+            .filter(c => c.definition === props.capability).length > 0)
             .sort((a,b) => a.title.localeCompare(b.title))
             .map(t => (
           <tr key={t._id}>

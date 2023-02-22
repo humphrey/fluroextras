@@ -1,3 +1,4 @@
+import React from 'react';
 import { ApiContext, useFluroApiState } from './fluroapi/context';
 import { LoginForm } from './LoginForm';
 // import {
@@ -9,10 +10,15 @@ import { LoginForm } from './LoginForm';
 import { Campuses } from './Campuses';
 import { ReloadButton } from './fluroapi/ReloadButton';
 import { Roster } from './Roster';
-import { Team } from './Team';
 import { TeamUnavailability } from './TeamUnavailability';
+import cs from 'classnames';
+import { TeamTable } from './TeamTable';
 
 
+const capabilities = ['worshipCapability', 'worshipproduction', 'connectionscapability'];
+
+type Section = 'Team' | 'Roster' | 'Unavailability';
+const sections: ReadonlyArray<Section> = ['Team', 'Roster', 'Unavailability'];
 
 // const Root = () => {
 //   const apiState = useApiStore();
@@ -67,6 +73,8 @@ import { TeamUnavailability } from './TeamUnavailability';
 
 function App() {
   const fluro = useFluroApiState()
+  const [section, setSection] = React.useState<Section>('Team')
+  const [capability, setCapability] = React.useState(capabilities[0])
   return (
     <ApiContext.Provider value={fluro}>
       {/* <RouterProvider router={router} /> */}
@@ -78,24 +86,52 @@ function App() {
           {/* <button className="btn btn-light mx-3" type="button" onClick={async () => await apiState.updateAllData()}>Reload</button> */}
         </div>
 
-        <Campuses/>
+        <div className='container-fluid'>
 
-        {fluro.team?.reload && <>
-          <h5>Team <ReloadButton {...fluro.team}/></h5>
-          <Team/>
-        </>}
-        {fluro.eventDetails?.reload && <>
+          <div className='d-flex justify-content-between mb-3'>
+
+            <div className='btn-group' role="group">
+              {sections.map(s => (
+                <button key={s} type="button" 
+                  className={cs('btn btn-outline-primary', s == section && 'active')}
+                  onClick={() => setSection(s)}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+
+            <div className='btn-group' role="group">
+              {capabilities.map(c => (
+                <button key={c} type="button" 
+                  className={cs('btn btn-outline-primary', c == capability && 'active')}
+                  onClick={() => setCapability(c)}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+
+          </div>
+
+          {section === 'Team' && fluro.team?.reload && <>
+            <h5>Team <ReloadButton {...fluro.team}/></h5>
+            <TeamTable capability={capability}/>
+          </>}
+
+        </div>
+
+        {section === 'Roster' && fluro.eventDetails?.reload && <>
           <h5>Team Roster <ReloadButton {...fluro.eventDetails}/></h5>
           <Roster/>
         </>}
-        {fluro.unavailability?.reload && <>
-          <h5>Worship Team Unavailability <ReloadButton {...fluro.unavailability}/></h5>
-          <TeamUnavailability type="worshipCapability"/>
-          <h5>Production Team Unavailability <ReloadButton {...fluro.unavailability}/></h5>
-          <TeamUnavailability type="worshipproduction"/>
-          <h5>Connection Team Unavailability <ReloadButton {...fluro.unavailability}/></h5>
-          <TeamUnavailability type="connectionscapability"/>
+
+        {section === 'Unavailability' && fluro.unavailability?.reload && <>
+          <h5>Unavailability <ReloadButton {...fluro.unavailability}/></h5>
+          <TeamUnavailability type={capability}/>
         </>}
+        <Campuses/>
+
       </> : 
       <LoginForm/>}
 

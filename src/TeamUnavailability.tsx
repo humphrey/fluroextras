@@ -24,7 +24,7 @@ export const TeamUnavailability = (props: Props) => {
               <th>{m.title}</th>
               {unavail && unavail[m._id]?.filter(u => u.startDate.localeCompare(addDays(new Date(), -2).toISOString()) > 0 || u.endDate.localeCompare((new Date()).toISOString()) > 0).sort((a,b) => a.startDate.localeCompare(b.startDate)).map(u => (
                 <td key={u._id}>
-                  {u.startDate}<br/>{u.endDate}<br/>{u.description}
+                  {u.startDate.substring(0, 16)}<br/>{u.endDate.substring(0, 16)}<br/>{u.description}
                 </td>
               ))}
             </tr>
