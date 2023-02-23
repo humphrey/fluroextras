@@ -7,13 +7,14 @@ import { Roster } from './Roster';
 import { TeamUnavailability } from './TeamUnavailability';
 import cs from 'classnames';
 import { TeamTable } from './TeamTable';
+import { SectionHeading } from './SectionHeading';
 
 
 
 const capabilities = ['worshipCapability', 'worshipproduction', 'connectionscapability'];
 
 type Section = 'Team' | 'Roster' | 'Unavailability';
-const sections: ReadonlyArray<Section> = ['Team', 'Roster', 'Unavailability'];
+const sections: ReadonlyArray<Section> = ['Team', /*'Roster',*/ 'Unavailability'];
 
 
 export const App = () => {
@@ -22,61 +23,111 @@ export const App = () => {
   const [capability, setCapability] = React.useState(capabilities[0])
   return (
     <ApiContext.Provider value={fluro}>
-      {fluro.auth.api ? <>
-        <div className='bg-dark text-white mb-2 d-flex align-items-center'>
-          <div className='p-3 me-auto'>Simple Fluro Schedular</div>
-          <div className='p-3'>{fluro.auth.data?.firstName}</div>
-          {fluro.auth.data && <button className='btn btn-dark' onClick={() => fluro.auth.logout()}>Logout</button>}
-        </div>
+      {fluro.auth.api ? 
+        <>
+          <nav className="navbar sticky-top navbar-expand-lg bg-body-tertiary border-bottom" style={{background: '#f7f8fa'}}>
+            <div className="container-fluid">
+              <a className="navbar-brand" href="/">Fluro Extras</a>
+              <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span className="navbar-toggler-icon"></span>
+              </button>
+              <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul className="navbar-nav mb-2 mb-lg-0 border-start border-end border-secondary-subtle">
 
-        <div className='container-fluid'>
+                  {sections.map(s => (
+                    <li className="nav-item">
+                      <button key={s} type="button" 
+                        className={cs('btn btn-link nav-link', s == section && 'active text-primary')}
+                        onClick={() => setSection(s)}
+                      >
+                        {s}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <ul className="navbar-nav me-auto mb-2 mb-lg-0 border-start border-end border-secondary-subtle">
 
-          <div className='d-flex justify-content-between mb-3'>
+                  {capabilities.map(c => (
+                    <li className="nav-item">
+                      <button key={c} type="button" 
+                        className={cs('btn btn-link nav-link', c == capability && 'active text-primary')}
+                        onClick={() => setCapability(c)}
+                      >
+                        {c}
+                      </button>
+                    </li>
+                  ))}
 
-            <div className='btn-group' role="group">
-              {sections.map(s => (
-                <button key={s} type="button" 
-                  className={cs('btn btn-outline-primary', s == section && 'active')}
-                  onClick={() => setSection(s)}
-                >
-                  {s}
-                </button>
-              ))}
+                </ul>
+                <ul className="navbar-nav mb-2 mb-lg-0">
+
+                  <li className="nav-item dropdown">
+                    <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {fluro.auth.data?.firstName}
+                    </a>
+                    <ul className="dropdown-menu dropdown-menu-end">
+                      <li><button className="btn btn-link dropdown-item" onClick={() => fluro.logout()}>Logout</button></li>
+                    </ul>
+                  </li>
+                </ul>
+              </div>
             </div>
+          </nav>
 
-            <div className='btn-group' role="group">
-              {capabilities.map(c => (
-                <button key={c} type="button" 
-                  className={cs('btn btn-outline-primary', c == capability && 'active')}
-                  onClick={() => setCapability(c)}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
+          <div className='container-fluid mt-3 w-100'>
 
+
+            {section === 'Team' && fluro.team?.reload && 
+              <>
+                <SectionHeading reload={fluro.team}>Capabilities: {capability}</SectionHeading>
+                <TeamTable capability={capability}/>
+              </>
+            }
+            {section === 'Roster' && fluro.eventDetails?.reload && 
+              <>
+                <SectionHeading reload={fluro.eventDetails}>Roster: {capability}</SectionHeading>
+                <Roster/>
+              </>
+            }
           </div>
 
-          {section === 'Team' && fluro.team?.reload && <>
-            <h5>Team <ReloadButton {...fluro.team}/></h5>
-            <TeamTable capability={capability}/>
-          </>}
+            {section === 'Unavailability' && fluro.unavailability?.reload && 
+              <>
+                <div className='container-fluid mt-3 w-100'>
+                  <SectionHeading reload={fluro.unavailability}>Unavailability: {capability}</SectionHeading>
+                </div>
+                <div className='container-fluid mt-3 w-100' style={{overflowX: 'auto'}}>
+                  <TeamUnavailability type={capability}/>
+                </div>
+              </>
+            }
 
-        </div>
+          {/* <Campuses/> */}
 
-        {section === 'Roster' && fluro.eventDetails?.reload && <>
-          <h5>Team Roster <ReloadButton {...fluro.eventDetails}/></h5>
-          <Roster/>
-        </>}
-
-        {section === 'Unavailability' && fluro.unavailability?.reload && <>
-          <h5>Unavailability <ReloadButton {...fluro.unavailability}/></h5>
-          <TeamUnavailability type={capability}/>
-        </>}
-        <Campuses/>
-
-      </> : 
-      <LoginForm/>}
+        </> 
+      : 
+        <>
+          <div style={{maxWidth: '300px'}} className="mx-auto">
+            <div className="my-5 card text-bg-light">
+              <div className="card-body">
+                <h5 className='mb-3 border-bottom pb-3'>Humphrey's Fluro Extras</h5>
+                <LoginForm/>
+              </div>
+            </div>
+            <div className='small text-muted px-3 mb-5'>
+              <p><b>Is is safe to enter my Fluro password?</b></p>
+              <p><b>Yes,</b> because these extras run purely in your browser,
+               and do not connect to any server other that the official Fluro API.  
+               Feel feel to use your browser developer tools to verify this. 
+               Unfortunately, entering your password like this is how the Fluro API is designed.
+              </p>
+              <p><b>But be aware</b> that once you're logged in, we store access keys and fluro data in your 
+               browsers "sessionStorage". This will be deleted automatically by your browser when you close this tab.
+              </p>
+            </div>
+          </div>
+        </>
+      }
 
     </ApiContext.Provider>
   );

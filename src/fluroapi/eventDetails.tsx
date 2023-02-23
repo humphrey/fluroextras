@@ -84,7 +84,12 @@ export const useFluroEventDetails = (auth: FluroAuth, eventList: FluroEventList)
     return j;
   }
 
-  return { data, reload, fetching }
+  return { 
+    data, 
+    reload, 
+    fetching,
+    wipe: () => setData(null),
+  }
 };
 
 

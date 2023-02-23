@@ -18,6 +18,9 @@ export const useFluroApiState = () => {
     eventList,
     eventDetails,
     unavailability,
+    logout: () => {
+      auth._logout();
+    }
   };
 }
 
@@ -25,11 +28,12 @@ type FluroApiContextData = ReturnType<typeof useFluroApiState>
 
 
 export const ApiContext = React.createContext<FluroApiContextData>({
-  auth: {data: null, fetching: false, api: null, login: async () => null, logout: async () => {}},
+  auth: {data: null, fetching: false, api: null, login: async () => null, _logout: async () => {}},
   team: null,
   eventList: null,
   eventDetails: null,
   unavailability: null,
+  logout: () => {},
 });
 
 

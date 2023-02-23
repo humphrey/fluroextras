@@ -73,7 +73,12 @@ export const useFluroUnavailability = (auth: FluroAuth, team: FluroTeam) => {
   }
 
 
-  return { data, reload, fetching }
+  return { 
+    data, 
+    reload, 
+    fetching,
+    wipe: () => setData(null),
+   }
 };
 
 

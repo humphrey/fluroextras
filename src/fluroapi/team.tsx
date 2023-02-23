@@ -139,6 +139,7 @@ export const useFluroTeam = (auth: FluroAuth) => {
       }
       return data;
     },
+    wipe: () => setData(null),
   }
 };
 

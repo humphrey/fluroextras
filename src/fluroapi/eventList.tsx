@@ -69,6 +69,7 @@ export const useFluroEventList = (auth: FluroAuth) => {
       }
       return data;
     },
+    wipe: () => setData(null),
   }
 };
 

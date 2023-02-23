@@ -14,13 +14,18 @@ export const LoginForm = () => {
   });
   return (
     <form onSubmit={onSubmit}>
-      <label>Username</label>
-      <input {...register("username")} />
-      <label>Password</label>
-      <input {...register("password")} type="password" />
+      <div className='mb-3'>
+        <label htmlFor="id-fluro-username" className='form-label'>Your Fluro Username</label>
+        <input {...register("username")} id="id-fluro-username" className='form-control'/>
+      </div>
+      <div className='mb-4'>
+        <label htmlFor="id-fluro-password" className='form-label'>Your Fluro Password</label>
+        <input {...register("password")} type="password" id="id-fluro-password" className='form-control'/>
+      </div>
       <button
         type="submit"
         disabled={loading}
+        className='btn btn-primary'
       >{loading ? 'Logging In' : 'Login'}
       </button>
     </form>

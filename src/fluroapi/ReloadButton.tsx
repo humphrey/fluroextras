@@ -1,11 +1,16 @@
 import React from 'react';
 
-interface Props {
+export interface ReloadButtonProps {
   data: any | null
   fetching: boolean
   reload: () => Promise<any>
 }
 
-export const ReloadButton = (props: Props) => (
-  <button disabled={props.fetching} onClick={() => props.reload()}>{props.fetching ? 'Loading...' : (props.data ? 'Reload' : 'Load')}</button>
+export const ReloadButton = (props: ReloadButtonProps) => (
+  <button 
+    className='btn btn-outline-secondary'
+    disabled={props.fetching} 
+    onClick={() => props.reload()}>
+      {props.fetching ? 'Fetching data...' : (props.data ? 'Reload data' : 'Load data')}
+  </button>
 )

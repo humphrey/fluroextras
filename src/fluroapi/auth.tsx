@@ -99,7 +99,7 @@ export const useFluroAuth = () => {
       return d;
     },
 
-    logout: async () => { 
+    _logout: async () => { 
       setUser(null)
       window.sessionStorage.clear();
     },

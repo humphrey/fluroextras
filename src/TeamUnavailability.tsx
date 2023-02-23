@@ -1,5 +1,4 @@
 import { useFluroContext } from './fluroapi/context';
-import { addDays } from './fluroapi/eventList';
 import cs from 'classnames';
 
 
@@ -32,14 +31,11 @@ export const TeamUnavailability = (props: Props) => {
       u.endDate.substring(0, 10).localeCompare(dateStr) >= 0
     );
     return matches.length > 0 ? matches : null;
-    // const iso = date.toISOString();
-    // unavail[contactId].filter(u => u)
-    // return false
   }
 
   return (
     <>
-      <table className='table table-bordered table-sm'>
+      <table className='table table-bordered table-striped table-sm'>
         <thead>
           <tr>
             <td></td>
@@ -55,22 +51,15 @@ export const TeamUnavailability = (props: Props) => {
         <tbody>
           {team?.filter(m => m.capabilities.filter(c => c.definition == props.type).length > 0).map(m => (<>
             <tr key={m._id}>
-              <th style={{whiteSpace: 'nowrap'}}>{m.title}</th>
+              <th style={{whiteSpace: 'nowrap'}} className='ps-3'>{m.title}</th>
               {dates.map(d => (
                 ((b) => (
-                  <td className={cs('text-center small', b && 'bg-secondary text-white')} title={((b ?? []).map(bb => `${bb.description} (${bb.startDate} - ${bb.endDate})`).join('\n\n'))}>
+                  <td className={cs('text-center small',d.getUTCDay() === 0 && 'bg-light' , b && 'bg-secondary text-white')} title={((b ?? []).map(bb => `${bb.description} (${bb.startDate} - ${bb.endDate})`).join('\n\n'))}>
                     {b && d.getUTCDate()}
                   </td>
                 ))(isBlocked(m._id, d))
               ))}
             </tr>
-            {/* <tr><td colSpan={90}>
-              {unavail && unavail[m._id]?.filter(u => u.startDate.localeCompare(addDays(new Date(), -2).toISOString()) > 0 || u.endDate.localeCompare((new Date()).toISOString()) > 0).sort((a,b) => a.startDate.localeCompare(b.startDate)).map(u => (
-                <div key={u._id}>
-                  {u.startDate.substring(0, 16)}<br/>{u.endDate.substring(0, 16)}<br/>{u.description}
-                </div>
-              ))}</td>
-            </tr> */}
             </>))}
         </tbody>
       </table>
