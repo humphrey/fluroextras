@@ -59,12 +59,19 @@ export const useFluroAuth = () => {
   const [data, setUser] = useSessionState<LoginPayload>(sessionStateKeys.AUTH);
   const [fetching, setFetching] = React.useState(false);
 
+  const _logout = async () => { 
+    setUser(null)
+    window.sessionStorage.clear();
+  };
+
   const getAuthHeaders = (): HeadersInit => {
     if (!data) return {};
 
     // Is the refresh token expired?
     if (data.expires.localeCompare(new Date().toISOString()) <= 0) {
       console.log('token expired')
+      _logout();
+      return {};
     }
 
     return {Authorization: `Bearer ${data.token}`};
@@ -99,10 +106,7 @@ export const useFluroAuth = () => {
       return d;
     },
 
-    _logout: async () => { 
-      setUser(null)
-      window.sessionStorage.clear();
-    },
+    _logout,
 
   }
 };
