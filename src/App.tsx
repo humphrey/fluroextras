@@ -27,7 +27,7 @@ export const App = () => {
         <>
           <nav className="navbar sticky-top navbar-expand-lg bg-body-tertiary border-bottom" style={{background: '#f7f8fa'}}>
             <div className="container-fluid">
-              <a className="navbar-brand" href="/">Fluro Extras</a>
+              <a className="navbar-brand" href="./">Fluro Extras</a>
               <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span className="navbar-toggler-icon"></span>
               </button>
@@ -116,14 +116,10 @@ export const App = () => {
             </div>
             <div className='small text-muted px-3 mb-5'>
               <p><b>Is is safe to enter my Fluro password?</b></p>
-              <p><b>Yes,</b> because these extras run purely in your browser,
-               and do not connect to any server other that the official Fluro API.  
-               Feel feel to use your browser developer tools to verify this. 
-               Unfortunately, entering your password like this is how the Fluro API is designed.
-              </p>
-              <p><b>But be aware</b> that once you're logged in, we store access keys and fluro data in your 
-               browsers "sessionStorage". This will be deleted automatically by your browser when you close this tab.
-              </p>
+              <p><b>Yes.</b> Your password passwed straight to the official Fluro API (and then forgotten) to 
+              receive an access token which is wiped by the browser when you close this tab.</p>
+              <p><b>But,</b> you shouldn't believe any website that says this (including this one) as 
+              they could be lying or trying to scam you!</p>
             </div>
           </div>
         </>

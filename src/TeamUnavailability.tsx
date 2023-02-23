@@ -55,7 +55,9 @@ export const TeamUnavailability = (props: Props) => {
           </tr>
         </thead>
         <tbody>
-          {team?.filter(m => m.capabilities.filter(c => c.definition == props.type).length > 0).map(m => (<>
+          {team?.filter(m => m.capabilities.filter(c => c.definition == props.type).length > 0)
+                .sort((a,b) => a.title.localeCompare(b.title))
+                .map(m => (<>
             <tr key={m._id}>
               <th style={{whiteSpace: 'nowrap'}} className='ps-3'>{m.title}</th>
               {dates.map(d => (
