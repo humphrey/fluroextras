@@ -1,5 +1,6 @@
 import React from 'react';
 import { useFluroContext } from './fluroapi/context';
+import { ReloadButton } from './fluroapi/ReloadButton';
 import { Capability, TeamMember } from './fluroapi/team';
 
 interface Props {
@@ -11,7 +12,7 @@ export const TeamTable = (props: Props) => {
   const fluro = useFluroContext();
 
   if (!fluro.team?.data) {
-    return <>No loaded</>
+    return <ReloadButton {...fluro.team}/>
   }
 
   const team = fluro.team.data;

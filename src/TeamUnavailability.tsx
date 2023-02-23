@@ -1,5 +1,6 @@
 import { useFluroContext } from './fluroapi/context';
 import cs from 'classnames';
+import { ReloadButton } from './fluroapi/ReloadButton';
 
 
 interface Props {
@@ -14,6 +15,11 @@ export const TeamUnavailability = (props: Props) => {
   const fluro = useFluroContext();
   const team = fluro.team?.data;
   const unavail = fluro.unavailability?.data;
+
+
+  if (!fluro.unavailability?.data) {
+    return <ReloadButton {...fluro.unavailability}/>
+  }
 
   const today = new Date();
   const dates: Date[] = [];
@@ -40,7 +46,7 @@ export const TeamUnavailability = (props: Props) => {
           <tr>
             <td></td>
             {dates.map(d => (
-              <td className='text-center small'>
+              <td className={cs('text-center small', d.getUTCDay() === 0 && 'bg-light')}>
                 <div className='small'>{months[d.getUTCMonth()]}</div>
                 <div className='fw-bold'>{d.getUTCDate()}</div>
                 <div className='small'>{days[d.getUTCDay()]}</div>
@@ -54,7 +60,7 @@ export const TeamUnavailability = (props: Props) => {
               <th style={{whiteSpace: 'nowrap'}} className='ps-3'>{m.title}</th>
               {dates.map(d => (
                 ((b) => (
-                  <td className={cs('text-center small',d.getUTCDay() === 0 && 'bg-light' , b && 'bg-secondary text-white')} title={((b ?? []).map(bb => `${bb.description} (${bb.startDate} - ${bb.endDate})`).join('\n\n'))}>
+                  <td className={cs('text-center small', b ? 'bg-secondary text-white' : (d.getUTCDay() === 0 && 'bg-light'))} title={((b ?? []).map(bb => `${bb.description} (${bb.startDate} - ${bb.endDate})`).join('\n\n'))}>
                     {b && d.getUTCDate()}
                   </td>
                 ))(isBlocked(m._id, d))
