@@ -120,8 +120,10 @@ export const useFluroTeam = (auth: FluroAuth) => {
 
   const reload = async () => {
     if (auth.api === null) return null;
+    await auth.getAuthHeaders();
+
     setFetching(true);
-    const r = await fetch(API_URL + 'content/contact/filter', auth.api.buildPostInit(PAYLOAD));
+    const r = await fetch(API_URL + 'content/contact/filter', await auth.api.buildPostInit(PAYLOAD));
     if (!r.ok) return null;
     const j = (await r.json() as TeamMember[] | null) ?? [];
     setData(j);

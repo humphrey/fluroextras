@@ -32,6 +32,7 @@ export const useFluroUnavailability = (auth: FluroAuth, team: FluroTeam) => {
     if (auth.api === null) return null;
 
     setFetching(true);
+
     const teamData = (await team.getData());
 
     if (teamData === null) {
@@ -44,12 +45,18 @@ export const useFluroUnavailability = (auth: FluroAuth, team: FluroTeam) => {
       setFetching(false);
       return null;
     }
+
+    const apiHeaders = await auth.api.buildGetInit();
+    if (apiHeaders === null) {
+      setFetching(false);
+      return null;
+    }
     
     const returnedData = await Promise.all(
       teamData.map(async m => {
-        if (auth.api === null) return null;
+        if (auth.api === null || apiHeaders === null) return null;
         const url = API_URL + `contact/${m._id}/unavailability`;
-        const r = await fetch(url, auth.api.buildGetInit());
+        const r = await fetch(url, apiHeaders);
         if (!r.ok) return null;
         const j = (await r.json()) as UnavailablePeriod[] | null;
         if (j === null) return null;

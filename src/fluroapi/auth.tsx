@@ -42,6 +42,12 @@ export interface LoginPayload {
   }
 }
 
+interface RefreshTokenPayload {
+  token: string
+  refreshToken: string
+  expires: string
+}
+
 export const login = async (input: LoginInput) => {
   const r = await fetch(API_URL + 'token/login', {
     method: 'POST',
@@ -54,20 +60,44 @@ export const login = async (input: LoginInput) => {
   return await r.json() as unknown as LoginPayload;
 }
 
+export const refreshAuthToken = async (refreshToken: string) => {
+  const r = await fetch(API_URL + 'token/refresh', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({refreshToken})
+  });
+  if (!r.ok) return null;
+  return await r.json() as unknown as RefreshTokenPayload;
+}
+
 
 export const useFluroAuth = () => {
   const [data, setUser] = useSessionState<LoginPayload>(sessionStateKeys.AUTH);
   const [fetching, setFetching] = React.useState(false);
 
-  const getAuthHeaders = (): HeadersInit => {
+  const _logout = async () => { 
+    setUser(null)
+    window.sessionStorage.clear();
+  }
+
+  const getAuthHeaders = async (): Promise<HeadersInit | undefined> => {
     if (!data) return {};
 
     // Is the refresh token expired?
-    if (data.expires.localeCompare(new Date().toISOString()) <= 0) {
-      console.log('token expired')
-    }
+    // if (data.expires.localeCompare(new Date().toISOString()) <= 0) {
+      console.log('Auth token expired.  Refreshing...');
+      const newAuth = await refreshAuthToken(data.refreshToken);
+      if (!newAuth) {
+        _logout();
+        return undefined;
+      }
+      setUser({...data, ...newAuth});
+      return {Authorization: `Bearer ${newAuth.token}`};
+    // }
+    // return {Authorization: `Bearer ${data.token}`};
 
-    return {Authorization: `Bearer ${data.token}`};
   };
 
   return {
@@ -76,16 +106,18 @@ export const useFluroAuth = () => {
     
     fetching,
 
+    getAuthHeaders,
+
     api: data ? {
-      buildGetInit: () => ({
+      buildGetInit: async () => ({
         method: 'GET',
-        headers: getAuthHeaders(),
+        headers: await getAuthHeaders(),
       }),
-      buildPostInit: (json: any) => ({
+      buildPostInit: async (json: any) => ({
         method: 'POST',
         body:  JSON.stringify(json),
         headers: {
-          ...getAuthHeaders(),
+          ...await getAuthHeaders(),
           'Content-Type': 'application/json',
         },
       }),
@@ -99,10 +131,7 @@ export const useFluroAuth = () => {
       return d;
     },
 
-    _logout: async () => { 
-      setUser(null)
-      window.sessionStorage.clear();
-    },
+    _logout,
 
   }
 };

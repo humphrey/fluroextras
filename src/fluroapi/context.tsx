@@ -28,7 +28,7 @@ type FluroApiContextData = ReturnType<typeof useFluroApiState>
 
 
 export const ApiContext = React.createContext<FluroApiContextData>({
-  auth: {data: null, fetching: false, api: null, login: async () => null, _logout: async () => {}},
+  auth: {data: null, fetching: false, api: null, login: async () => null, _logout: async () => {}, getAuthHeaders: async () => undefined},
   team: null,
   eventList: null,
   eventDetails: null,
