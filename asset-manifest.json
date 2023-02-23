@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/fluroextras/static/css/main.089605bc.css",
+    "main.js": "/fluroextras/static/js/main.9305d5d5.js",
+    "static/js/787.a888b1cb.chunk.js": "/fluroextras/static/js/787.a888b1cb.chunk.js",
+    "index.html": "/fluroextras/index.html",
+    "main.089605bc.css.map": "/fluroextras/static/css/main.089605bc.css.map",
+    "main.9305d5d5.js.map": "/fluroextras/static/js/main.9305d5d5.js.map",
+    "787.a888b1cb.chunk.js.map": "/fluroextras/static/js/787.a888b1cb.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.089605bc.css",
+    "static/js/main.9305d5d5.js"
+  ]
+}
