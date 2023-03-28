@@ -68,7 +68,7 @@ export const useFluroEventDetails = (auth: FluroAuth, eventList: FluroEventList)
     }
     
     setFetching(true);
-    const r = await fetch(API_URL + 'content/event/multiple', auth.api.buildPostInit({
+    const r = await fetch(API_URL + 'content/event/multiple', await auth.api.buildPostInit({
       "ids": eventIds,
       "select":["title","_type","definition","subject","date","_id","realms","endDate","timezone","startDate","firstLine","status","plans","streamEnabled","publicTicketingEnabled","stats.guestExpected","stats.guestConfirmed","stats.guestDeclined","tickets.value","stats.checkin","headcount.average","track","rooms","locations","updated","created"],
       "populateAll":true,

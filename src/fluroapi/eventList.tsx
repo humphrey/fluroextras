@@ -28,7 +28,7 @@ export const useFluroEventList = (auth: FluroAuth) => {
   const reload = async () => {
     if (auth.api === null) return null;
     setFetching(true);
-    const r = await fetch(API_URL + 'content/event/filter', auth.api.buildPostInit({
+    const r = await fetch(API_URL + 'content/event/filter', await auth.api.buildPostInit({
       "startDate": addDays(new Date(), -30),
       "endDate": addDays(new Date(), +90),
       "timezone": "Australia/Hobart",

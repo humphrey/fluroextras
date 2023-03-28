@@ -42,6 +42,7 @@ export interface LoginPayload {
   }
 }
 
+
 export const login = async (input: LoginInput) => {
   const r = await fetch(API_URL + 'token/login', {
     method: 'POST',
@@ -55,6 +56,24 @@ export const login = async (input: LoginInput) => {
 }
 
 
+interface RefreshTokenPayload {
+  token: string
+  refreshToken: string
+  expires: string
+}
+
+export const fetchRefreshedAccessToken = async (refreshToken: string) => {
+  const r = await fetch(API_URL + 'token/refresh', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({refreshToken})
+  });
+  if (!r.ok) return null;
+  return await r.json() as unknown as RefreshTokenPayload;
+}
+
 export const useFluroAuth = () => {
   const [data, setUser] = useSessionState<LoginPayload>(sessionStateKeys.AUTH);
   const [fetching, setFetching] = React.useState(false);
@@ -64,16 +83,27 @@ export const useFluroAuth = () => {
     window.sessionStorage.clear();
   };
 
-  const getAuthHeaders = (): HeadersInit => {
+
+  const refreshAccessToken = async () => {
+    if (!data) return
+    const d = await fetchRefreshedAccessToken(data?.refreshToken);
+    setUser({...data, ...d})
+    return d;
+  }
+
+  const getAuthHeaders = async (): Promise<HeadersInit> => {
     if (!data) return {};
 
     // Is the refresh token expired?
-    if (data.expires.localeCompare(new Date().toISOString()) <= 0) {
-      console.log('token expired')
-      _logout();
-      return {};
+    if (getTimeUntilExpires(data.expires)[0] <= 5) {  // 5 mins
+      console.log('token expired, refreshing...')
+      const newAccessToken = await refreshAccessToken();
+      if (!newAccessToken) {
+        await _logout();
+        return {};
+      }
+      return {Authorization: `Bearer ${newAccessToken.token}`};
     }
-
     return {Authorization: `Bearer ${data.token}`};
   };
 
@@ -84,15 +114,15 @@ export const useFluroAuth = () => {
     fetching,
 
     api: data ? {
-      buildGetInit: () => ({
+      buildGetInit: async () => ({
         method: 'GET',
-        headers: getAuthHeaders(),
+        headers: await getAuthHeaders(),
       }),
-      buildPostInit: (json: any) => ({
+      buildPostInit: async (json: any) => ({
         method: 'POST',
         body:  JSON.stringify(json),
         headers: {
-          ...getAuthHeaders(),
+          ...await getAuthHeaders(),
           'Content-Type': 'application/json',
         },
       }),
@@ -101,15 +131,40 @@ export const useFluroAuth = () => {
     login: async (input: LoginInput) => {
       setFetching(true);
       const d = await login(input);
-      setUser(d);
+      setUser(d ? {
+        _id: d._id,
+        name: d.name,
+        email: d.email,
+        firstName: d.firstName,
+        lastName: d.lastName,
+        token: d.token,
+        refreshToken: d.refreshToken,
+        expires: d.expires,
+        account: {
+          _id: d.account._id,
+          title: d.account.title,
+          shortName: d.account.shortName,
+        },
+        permissionSets: d.permissionSets,
+      } : null);
       setFetching(false);
       return d;
     },
 
     _logout,
 
+    refreshAccessToken,
+
   }
 };
 
 
 export type FluroAuth = ReturnType<typeof useFluroAuth>;
+
+
+
+export const getTimeUntilExpires = (expires: string | null): [number, number] => {
+  if (!expires) return [0, 0];
+  const ms = new Date(expires).getTime() - new Date().getTime();
+  return [Math.floor(ms / 60 / 1000), Math.round((ms / 1000) % 60)];
+}

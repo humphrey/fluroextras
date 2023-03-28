@@ -8,10 +8,15 @@ import { TeamUnavailability } from './TeamUnavailability';
 import cs from 'classnames';
 import { TeamTable } from './TeamTable';
 import { SectionHeading } from './SectionHeading';
+import { AuthInfo } from './AuthInfo';
 
 
 
-const capabilities = ['worshipCapability', 'worshipproduction', 'connectionscapability'];
+const capabilities = [
+  'worshipCapability', 
+  'worshipproduction', 
+  'connectionscapability',
+];
 
 type Section = 'Team' | 'Roster' | 'Unavailability';
 const sections: ReadonlyArray<Section> = ['Team', /*'Roster',*/ 'Unavailability'];
@@ -60,13 +65,14 @@ export const App = () => {
 
                 </ul>
                 <ul className="navbar-nav mb-2 mb-lg-0">
-
                   <li className="nav-item dropdown">
                     <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     {fluro.auth.data?.firstName}
                     </a>
                     <ul className="dropdown-menu dropdown-menu-end">
-                      <li><button className="btn btn-link dropdown-item" onClick={() => fluro.logout()}>Logout</button></li>
+                      <AuthInfo/>
+                      <li><hr className="dropdown-divider"/></li>
+                      <li><button className="btn btn-link dropdown-item  rounded-0" onClick={() => fluro.logout()}>Logout</button></li>
                     </ul>
                   </li>
                 </ul>

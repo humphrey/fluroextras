@@ -49,7 +49,7 @@ export const useFluroUnavailability = (auth: FluroAuth, team: FluroTeam) => {
       teamData.map(async m => {
         if (auth.api === null) return null;
         const url = API_URL + `contact/${m._id}/unavailability`;
-        const r = await fetch(url, auth.api.buildGetInit());
+        const r = await fetch(url, await auth.api.buildGetInit());
         if (!r.ok) return null;
         const j = (await r.json()) as UnavailablePeriod[] | null;
         if (j === null) return null;
