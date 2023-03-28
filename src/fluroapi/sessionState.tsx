@@ -10,7 +10,7 @@ export const sessionStateKeys = {
 }
 
 
-export const useSessionState = <T>(key: string): [T | null, (state: T | null) => void] => {
+export const useSessionState = <T,>(key: string): [T | null, (state: T | null) => void] => {
   // Cache data in session
   const storedData = window.sessionStorage.getItem(key);
   const [state, setState] = React.useState<T | null>(storedData ? JSON.parse(storedData) as T : null);
