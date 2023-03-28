@@ -95,7 +95,7 @@ export const useFluroAuth = () => {
     if (!data) return {};
 
     // Is the refresh token expired?
-    if (getTimeUntilExpires(data.expires)[0] <= 5) {  // 5 mins
+    if (getTimeUntilExpires(data.expires).min <= 2) {  // 5 mins
       console.log('token expired, refreshing...')
       const newAccessToken = await refreshAccessToken();
       if (!newAccessToken) {
@@ -162,9 +162,17 @@ export const useFluroAuth = () => {
 export type FluroAuth = ReturnType<typeof useFluroAuth>;
 
 
-
-export const getTimeUntilExpires = (expires: string | null): [number, number] => {
-  if (!expires) return [0, 0];
+export interface TimeUntilExpires {
+  msTotal: number,
+  min: number,
+  sec: number,
+}
+export const getTimeUntilExpires = (expires: string | null): TimeUntilExpires => {
+  if (!expires) return {msTotal: 0, min: 0,  sec: 0};
   const ms = new Date(expires).getTime() - new Date().getTime();
-  return [Math.floor(ms / 60 / 1000), Math.round((ms / 1000) % 60)];
+  return {
+    msTotal: ms,
+    min: Math.floor(ms / 60 / 1000), 
+    sec: Math.round((ms / 1000) % 60)
+  };
 }

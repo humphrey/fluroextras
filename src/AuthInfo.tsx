@@ -1,8 +1,7 @@
 
 
 import React from 'react';
-import { getTimeUntilExpires, useFluroAuth } from './fluroapi/auth';
-import { useSelectCampuses } from './selectors/campuses';
+import { getTimeUntilExpires, TimeUntilExpires, useFluroAuth } from './fluroapi/auth';
 
 interface Props {
 }
@@ -11,7 +10,7 @@ interface Props {
 export const AuthInfo = (props: Props) => {
   const auth = useFluroAuth();
 
-  const [min, sec] = useSessionExpiresIn(auth.data?.expires ?? null, 1000)
+  const {msTotal, min, sec} = useSessionExpiresIn(auth.data?.expires ?? null, 1000)
   const [refreshing, setRefreshing] = React.useState(false);
   return (
     <>
@@ -26,7 +25,16 @@ export const AuthInfo = (props: Props) => {
           }}
           disabled={refreshing}
         >
-          {refreshing ? 'Refreshing Auth Token' : 'Refresh Auth Token'}<br/><small><code className='small text-muted'>Expires in {min}&nbsp;min&nbsp;{sec.toString().padStart(2, '0')}&nbsp;sec</code></small>
+          {refreshing ? 'Refreshing Auth Token' : 'Refresh Auth Token'}
+          <br/>
+          <small>
+            <code className='small text-muted'>
+              {msTotal >= 0 
+                ? <>Expires in {min}&nbsp;min&nbsp;{sec.toString().padStart(2, '0')}&nbsp;sec</>
+                : <>Expired {(0-min)}&nbsp;min&nbsp;{(0-sec).toString().padStart(2, '0')}&nbsp;sec&nbsp;ago</>
+              }
+            </code>
+          </small>
         </button>
       </li>
     </>
@@ -34,7 +42,7 @@ export const AuthInfo = (props: Props) => {
 }
 
 
-const useSessionExpiresIn = (expires: string | null, refreshIntervalMs=1000): [number, number] => {
+const useSessionExpiresIn = (expires: string | null, refreshIntervalMs=1000): TimeUntilExpires => {
   const [ms, setMs] = React.useState(getTimeUntilExpires(expires));
 
   React.useEffect(() => {
