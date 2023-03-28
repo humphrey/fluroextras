@@ -1,21 +1,18 @@
+import cs from 'classnames';
 import React from 'react';
+import { AuthInfo } from './AuthInfo';
 import { ApiContext, useFluroApiState } from './fluroapi/context';
 import { LoginForm } from './LoginForm';
-import { Campuses } from './Campuses';
-import { ReloadButton } from './fluroapi/ReloadButton';
 import { Roster } from './Roster';
-import { TeamUnavailability } from './TeamUnavailability';
-import cs from 'classnames';
-import { TeamTable } from './TeamTable';
 import { SectionHeading } from './SectionHeading';
-import { AuthInfo } from './AuthInfo';
+import { CapabilityInfo, CapabilitySlug, TeamTable } from './TeamTable';
+import { TeamUnavailability } from './TeamUnavailability';
 
 
-
-const capabilities = [
-  'worshipCapability', 
-  'worshipproduction', 
-  'connectionscapability',
+const capabilities: CapabilityInfo[] = [
+  {slug: 'worshipCapability', name: 'Worship'}, 
+  {slug: 'worshipproduction', name: 'Production'}, 
+  {slug: 'connectionscapability', name: 'Connections'}, 
 ];
 
 type Section = 'Team' | 'Roster' | 'Unavailability';
@@ -25,7 +22,8 @@ const sections: ReadonlyArray<Section> = ['Team', /*'Roster',*/ 'Unavailability'
 export const App = () => {
   const fluro = useFluroApiState()
   const [section, setSection] = React.useState<Section>('Team')
-  const [capability, setCapability] = React.useState(capabilities[0])
+  const [capability, setCapability] = React.useState<CapabilitySlug>(capabilities[0].slug)
+  const capabilityInfo = capabilities.filter(c => c.slug === capability)[0] ?? null;
   return (
     <ApiContext.Provider value={fluro}>
       {fluro.auth.api ? 
@@ -54,11 +52,11 @@ export const App = () => {
 
                   {capabilities.map(c => (
                     <li className="nav-item">
-                      <button key={c} type="button" 
-                        className={cs('btn btn-link nav-link', c == capability && 'active text-primary')}
-                        onClick={() => setCapability(c)}
+                      <button key={c.slug} type="button" 
+                        className={cs('btn btn-link nav-link', c.slug == capability && 'active text-primary')}
+                        onClick={() => setCapability(c.slug)}
                       >
-                        {c}
+                        {c.name}
                       </button>
                     </li>
                   ))}
@@ -83,24 +81,24 @@ export const App = () => {
           <div className='container-fluid mt-3 w-100'>
 
 
-            {section === 'Team' && fluro.team?.reload && 
+            {section === 'Team' && capabilityInfo && fluro.team?.reload && 
               <>
-                <SectionHeading reload={fluro.team}>Capabilities: {capability}</SectionHeading>
-                <TeamTable capability={capability}/>
+                <SectionHeading reload={fluro.team}>Capabilities: {capabilityInfo.name}</SectionHeading>
+                <TeamTable capability={capabilityInfo}/>
               </>
             }
-            {section === 'Roster' && fluro.eventDetails?.reload && 
+            {section === 'Roster' && capabilityInfo && fluro.eventDetails?.reload && 
               <>
-                <SectionHeading reload={fluro.eventDetails}>Roster: {capability}</SectionHeading>
+                <SectionHeading reload={fluro.eventDetails}>Roster: {capabilityInfo.name}</SectionHeading>
                 <Roster/>
               </>
             }
           </div>
 
-            {section === 'Unavailability' && fluro.unavailability?.reload && 
+            {section === 'Unavailability' && capabilityInfo && fluro.unavailability?.reload && 
               <>
                 <div className='container-fluid mt-3 w-100'>
-                  <SectionHeading reload={fluro.unavailability}>Unavailability: {capability}</SectionHeading>
+                  <SectionHeading reload={fluro.unavailability}>Unavailability: {capabilityInfo.name}</SectionHeading>
                 </div>
                 <div className='container-fluid mt-3 w-100' style={{overflowX: 'auto'}}>
                   <TeamUnavailability type={capability}/>

@@ -3,8 +3,12 @@ import { useFluroContext } from './fluroapi/context';
 import { ReloadButton } from './fluroapi/ReloadButton';
 import { Capability, TeamMember } from './fluroapi/team';
 
+
+export type CapabilitySlug = 'worshipCapability' | 'worshipproduction' | 'connectionscapability';
+export interface CapabilityInfo { slug: CapabilitySlug, name: string}
+
 interface Props {
-  capability: string
+  capability: CapabilityInfo
 }
 
 
@@ -20,7 +24,7 @@ export const TeamTable = (props: Props) => {
   const capabilitiesByTitle: {[key: string]: Capability} = {};
   for (let m of team) {
     for (let c of m.capabilities) {
-      if (c.definition === props.capability)
+      if (c.definition === props.capability.slug)
       capabilitiesByTitle[c.title] = c;
     }
   }
@@ -38,7 +42,7 @@ export const TeamTable = (props: Props) => {
       </thead>
       <tbody>
         {team.filter(m => m.capabilities
-            .filter(c => c.definition === props.capability).length > 0)
+            .filter(c => c.definition === props.capability.slug).length > 0)
             .sort((a,b) => a.title.localeCompare(b.title))
             .map(t => (
           <tr key={t._id}>
